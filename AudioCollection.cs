@@ -14,9 +14,8 @@ namespace Somnisonus
                 sampleProviders.Add(new CachedSoundSampleProvider(sound));
             }
             concatenatingSampleProvider = new ConcatenatingSampleProvider(sampleProviders);
-            currentlyLooping = loop;
         }
-
+        
         public void DeactivateLoop()
         {
             currentlyLooping = false;

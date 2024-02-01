@@ -23,7 +23,9 @@ namespace Somnisonus
     public partial class MainWindow : Window
     {
         private WaveOutEvent outputDevice;
-        private AudioFileReader audioFile;
+        private WaveFileReader audioFile;
+        private LoopingConcatSampleProvider loopingConcatSampleProvider;
+        private CachedSoundSampleProvider cachedSoundSampleProvider;
         private string filename;
 
         public MainWindow()
@@ -38,7 +40,8 @@ namespace Somnisonus
             openFileDialog.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             if (openFileDialog.ShowDialog() == true) {
-                filename = openFileDialog.FileName;                
+                filename = openFileDialog.FileName;
+                cachedSoundSampleProvider = new CachedSoundSampleProvider(new CachedSound(filename));
             }
         }
 
@@ -59,10 +62,11 @@ namespace Somnisonus
             }
             if (audioFile == null)
             {
-                audioFile = new AudioFileReader(filename);
-                outputDevice.Init(audioFile);
+                //audioFile = new WaveFileReader(filename);
+                //LoopStream loop = new LoopStream(audioFile);
+                //outputDevice.Init(loop);
+                outputDevice.Init(loopingConcatSampleProvider);
             }
-            nowPlaying.Text.Concat(filename);
             outputDevice.Play();
         }
 
