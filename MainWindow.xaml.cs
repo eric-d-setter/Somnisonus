@@ -28,6 +28,8 @@ namespace Somnisonus
         private LoopingConcatWaveProvider loopingConcatSampleProvider;
         private CachedSoundSampleProvider cachedSoundSampleProvider;
         private CachedSoundSampleProvider cachedSoundSampleProvider2;
+        private ConcatenatingSampleProvider concatenatingSampleProvider;
+        private MixingSampleProvider mixingSampleProvider;
         private string filename1;
         private string filename2;
 
@@ -87,7 +89,9 @@ namespace Somnisonus
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
                 loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
-                outputDevice.Init(loopingConcatSampleProvider);
+                concatenatingSampleProvider = new ConcatenatingSampleProvider(new ISampleProvider[] { loopingConcatSampleProvider.ToSampleProvider() });
+                loopingConcatSampleProvider.EnableLooping = false;
+                outputDevice.Init(concatenatingSampleProvider);
 
             }
             outputDevice.Play();
