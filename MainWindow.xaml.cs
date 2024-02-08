@@ -23,10 +23,14 @@ namespace Somnisonus
     public partial class MainWindow : Window
     {
         private WaveOutEvent outputDevice;
-        private WaveFileReader audioFile;
-        private LoopingConcatSampleProvider loopingConcatSampleProvider;
+        private AudioFileReader audioFile1;
+        private AudioFileReader audioFile2;
+        private LoopingConcatWaveProvider loopingConcatSampleProvider;
         private CachedSoundSampleProvider cachedSoundSampleProvider;
-        private string filename;
+        private CachedSoundSampleProvider cachedSoundSampleProvider2;
+        private string filename1;
+        private string filename2;
+
 
         public MainWindow()
         {
@@ -40,8 +44,20 @@ namespace Somnisonus
             openFileDialog.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
             if (openFileDialog.ShowDialog() == true) {
-                filename = openFileDialog.FileName;
-                cachedSoundSampleProvider = new CachedSoundSampleProvider(new CachedSound(filename));
+                filename1 = openFileDialog.FileName;
+            }
+        }
+
+
+        private void btnOpenFiles_Click2(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            openFileDialog.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            if (openFileDialog.ShowDialog() == true)
+            {
+                filename2 = openFileDialog.FileName;
             }
         }
 
@@ -49,8 +65,10 @@ namespace Somnisonus
         {
             outputDevice.Dispose();
             outputDevice = null;
-            audioFile.Dispose();
-            audioFile = null;
+            audioFile1.Dispose();
+            audioFile1 = null;
+            audioFile2.Dispose();
+            audioFile2 = null;
         }
 
         private void play_Click(object sender, RoutedEventArgs e)
@@ -60,12 +78,17 @@ namespace Somnisonus
                 outputDevice = new WaveOutEvent();
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
             }
-            if (audioFile == null)
+            if (audioFile1 == null && audioFile2 == null)
             {
-                //audioFile = new WaveFileReader(filename);
+                audioFile1 = new AudioFileReader(filename1);
+                
+                audioFile2 = new AudioFileReader(filename2);
+
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
+                loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
                 outputDevice.Init(loopingConcatSampleProvider);
+
             }
             outputDevice.Play();
         }
@@ -74,5 +97,6 @@ namespace Somnisonus
         {
             outputDevice?.Stop();
         }
+
     }
 }
