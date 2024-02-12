@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
+﻿using NAudio.Wave;
 
 namespace Somnisonus
 {
@@ -61,6 +55,10 @@ namespace Somnisonus
         public void Proceed()
         {
             this.EnableLooping = false;
+        }
+
+        public bool IsLoopable() { 
+            return true;
         }
 
         int IWaveProvider.Read(byte[] buffer, int offset, int count)
