@@ -16,8 +16,9 @@ namespace Somnisonus
         private float[] sourceBuffer;
 
         private const int MaxInputs = 1024;
+        private readonly Queue<MyWaveProvider> queue;
         // TODO Need to add queue
-
+        public MyWaveProvider NowPlaying { get; private set; } 
         // TODO Need to add the now playing
 
         //
@@ -59,6 +60,7 @@ namespace Somnisonus
             }
 
             sources = new List<ISampleProvider>();
+            queue = new Queue<MyWaveProvider>();
             WaveFormat = waveFormat;
         }
 
@@ -70,20 +72,50 @@ namespace Somnisonus
         //   sources:
         //     Mixer inputs - must all have the same waveformat, and must all be of the same
         //     WaveFormat. There must be at least one input
-        public QueuingSampleProvider(IEnumerable<ISampleProvider> sources)
+        public QueuingSampleProvider(IEnumerable<MyWaveProvider> queuable)
         {
             this.sources = new List<ISampleProvider>();
-            foreach (ISampleProvider source in sources)
+            queue = new Queue<MyWaveProvider>();
+            if (queuable.Count() == 0)
             {
-                AddMixerInput(source);
+                throw new ArgumentException("Queue must contain at least one input");
             }
-
+            AddToQueue(queuable.ToList());
+            PlayNext();
             if (this.sources.Count == 0)
             {
                 throw new ArgumentException("Must provide at least one input in this constructor");
             }
         }
 
+        public void AddToQueue(IEnumerable<MyWaveProvider> queuable)
+        {
+            foreach (MyWaveProvider item in queuable)
+            {
+                AddToQueue(item);
+            }
+        }
+
+        public void AddToQueue(MyWaveProvider queuable)
+        {
+            queue.Enqueue(queuable);
+            if (sources.Count == 0)
+            {
+                PlayNext();
+            }
+        }
+
+        public void StopLooping()
+        {
+            NowPlaying.Proceed();
+        } 
+
+        private void PlayNext()
+        {
+            NowPlaying = queue.Dequeue();
+            AddMixerInput(NowPlaying);
+
+        }
         //
         // Summary:
         //     Adds a WaveProvider as a Mixer input. Must be PCM or IEEE float already
@@ -91,7 +123,7 @@ namespace Somnisonus
         // Parameters:
         //   mixerInput:
         //     IWaveProvider mixer input
-        public void AddMixerInput(IWaveProvider mixerInput)
+        private void AddMixerInput(IWaveProvider mixerInput)
         {
             AddMixerInput(mixerInput.ToSampleProvider());
         }
@@ -103,7 +135,7 @@ namespace Somnisonus
         // Parameters:
         //   mixerInput:
         //     Mixer input
-        public void AddMixerInput(ISampleProvider mixerInput)
+        private void AddMixerInput(ISampleProvider mixerInput)
         {
             lock (sources)
             {
@@ -132,7 +164,7 @@ namespace Somnisonus
         // Parameters:
         //   mixerInput:
         //     Mixer input to remove
-        public void RemoveMixerInput(ISampleProvider mixerInput)
+        private void RemoveMixerInput(ISampleProvider mixerInput)
         {
             lock (sources)
             {
@@ -143,7 +175,7 @@ namespace Somnisonus
         //
         // Summary:
         //     Removes all mixer inputs
-        public void RemoveAllMixerInputs()
+        private void RemoveAllMixerInputs()
         {
             lock (sources)
             {
@@ -195,6 +227,10 @@ namespace Somnisonus
                     {
                         this.MixerInputEnded?.Invoke(this, new SampleProviderEventArgs(sampleProvider));
                         sources.RemoveAt(num2);
+                        if (queue.Count > 0)
+                        {
+                            PlayNext();
+                        }
                         // TODO after removing the source, add a new source on from the queue and update the now playing
                     }
                 }

@@ -8,7 +8,7 @@ using NAudio.Wave.SampleProviders;
 
 namespace Somnisonus
 {
-    class LoopingConcatWaveProvider : IWaveProvider
+    class LoopingConcatWaveProvider : MyWaveProvider
     {
         private readonly AudioFileReader[] providers;
 
@@ -58,7 +58,7 @@ namespace Somnisonus
         /// </summary>
         public bool EnableLooping { get; set; }
 
-        public void Proceed(ISampleProvider provider)
+        public void Proceed()
         {
             this.EnableLooping = false;
         }
