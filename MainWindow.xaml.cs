@@ -25,13 +25,13 @@ namespace Somnisonus
         private WaveOutEvent outputDevice;
         private AudioFileReader audioFile1;
         private AudioFileReader audioFile2;
+        private AudioFileReader audioFile3;
         private LoopingConcatWaveProvider loopingConcatSampleProvider;
-        private CachedSoundSampleProvider cachedSoundSampleProvider;
-        private CachedSoundSampleProvider cachedSoundSampleProvider2;
         private ConcatenatingSampleProvider concatenatingSampleProvider;
-        private MixingSampleProvider mixingSampleProvider;
+        private QueuingSampleProvider mixer;
         private string filename1;
         private string filename2;
+        private string filename3;
 
 
         public MainWindow()
@@ -63,6 +63,19 @@ namespace Somnisonus
             }
         }
 
+        private void btn_OpenFile_End_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            openFileDialog.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            if (openFileDialog.ShowDialog() == true)
+            {
+                filename3 = openFileDialog.FileName;
+            }
+
+        }
+
         private void OnPlaybackStopped(object sender, StoppedEventArgs args)
         {
             outputDevice.Dispose();
@@ -80,12 +93,15 @@ namespace Somnisonus
                 outputDevice = new WaveOutEvent();
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
             }
-            if (audioFile1 == null && audioFile2 == null)
+            if (audioFile1 == null && audioFile2 == null && audioFile3 == null)
             {
                 audioFile1 = new AudioFileReader(filename1);
                 
                 audioFile2 = new AudioFileReader(filename2);
 
+                audioFile3 = new AudioFileReader(filename3);
+
+                mixer = new QueuingSampleProvider();
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
                 loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
@@ -102,5 +118,9 @@ namespace Somnisonus
             outputDevice?.Stop();
         }
 
+        private void StopLoop_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
     }
 }
