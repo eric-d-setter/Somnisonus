@@ -101,13 +101,15 @@ namespace Somnisonus
 
                 audioFile3 = new AudioFileReader(filename3);
 
-                mixer = new QueuingSampleProvider();
+                
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
+                MyWaveProvider waveProvider = new IWaveProvider(audioFile3); 
                 loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
-                concatenatingSampleProvider = new ConcatenatingSampleProvider(new ISampleProvider[] { loopingConcatSampleProvider.ToSampleProvider() });
-                loopingConcatSampleProvider.EnableLooping = false;
-                outputDevice.Init(concatenatingSampleProvider);
+                //concatenatingSampleProvider = new ConcatenatingSampleProvider(new ISampleProvider[] { loopingConcatSampleProvider.ToSampleProvider() });
+
+                mixer = new QueuingSampleProvider(new MyWaveProvider[] { loopingConcatSampleProvider, audioFile3.ToWaveProvider() });
+                outputDevice.Init(mixer);
 
             }
             outputDevice.Play();

@@ -9,9 +9,11 @@
     <Grid Margin="0,10,0,0">
         <Button Content="Play" Name="play" HorizontalAlignment="Left" Margin="431,28,0,0" VerticalAlignment="Top" Background="#FFDDDDDD" Height="33" Width="36" Click="play_Click"/>
         <Button Content="Stop" Name="stop" HorizontalAlignment="Left" Margin="490,28,0,0" VerticalAlignment="Top" Background="#FFDDDDDD" Height="33" Width="36" Click="stop_Click" Grid.ColumnSpan="2"/>
-        <Button Name="btnOpenFile2" Click="btnOpenFiles_Click" Margin="275,22,455,358">Open files</Button>
+        <Button x:Name="btnOpenFile2" Click="btnOpenFiles_Click" Margin="105,22,625,358" Content="Open file 1"/>
         <TextBlock Name="nowPlaying" HorizontalAlignment="Left" Margin="357,286,0,0" TextWrapping="Wrap" Text="Now Playing: " VerticalAlignment="Top"/>
-        <Button x:Name="btnOpenFile_Copy" Click="btnOpenFiles_Click2" Margin="275,86,455,294" Content="Open files"/>
+        <Button x:Name="btnOpenFile_Copy" Click="btnOpenFiles_Click2" Margin="105,86,625,294" Content="Open file 2"/>
+        <Button x:Name="btn_OpenFile_End" Content="Open File 3" HorizontalAlignment="Left" Margin="290,59,0,0" VerticalAlignment="Top" Height="45" Width="73" Click="btn_OpenFile_End_Click"/>
+        <Button x:Name="StopLoop" Content="End Loop" HorizontalAlignment="Left" Margin="115,152,0,0" VerticalAlignment="Top" Click="StopLoop_Click"/>
 
 
     </Grid>
