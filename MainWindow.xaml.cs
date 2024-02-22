@@ -104,11 +104,11 @@ namespace Somnisonus
                 
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
-                MyWaveProvider waveProvider = new IWaveProvider(audioFile3); 
+                MyWaveProvider finalSound = new MyWaveProviderWrapper(audioFile3); 
                 loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
                 //concatenatingSampleProvider = new ConcatenatingSampleProvider(new ISampleProvider[] { loopingConcatSampleProvider.ToSampleProvider() });
 
-                mixer = new QueuingSampleProvider(new MyWaveProvider[] { loopingConcatSampleProvider, audioFile3.ToWaveProvider() });
+                mixer = new QueuingSampleProvider(new MyWaveProvider[] { loopingConcatSampleProvider, finalSound });
                 outputDevice.Init(mixer);
 
             }
@@ -122,7 +122,7 @@ namespace Somnisonus
 
         private void StopLoop_Click(object sender, RoutedEventArgs e)
         {
-            
+            mixer.StopLooping();
         }
     }
 }
