@@ -76,11 +76,6 @@ namespace Somnisonus
                 throw new ArgumentException("Queue must contain at least one input");
             }
             AddToQueue(queuable.ToList());
-            PlayNext();
-            if (this.sources.Count == 0)
-            {
-                throw new ArgumentException("Must provide at least one input in this constructor");
-            }
         }
 
         public void AddToQueue(IEnumerable<MyWaveProvider> queuable)
@@ -107,7 +102,10 @@ namespace Somnisonus
 
         private void PlayNext()
         {
-            NowPlaying = queue.Dequeue();
+            if (queue.Count > 0)
+            {
+                NowPlaying = queue.Dequeue();
+            }
             AddMixerInput(NowPlaying);
 
         }

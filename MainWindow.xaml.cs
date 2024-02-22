@@ -88,7 +88,8 @@ namespace Somnisonus
 
         private void play_Click(object sender, RoutedEventArgs e)
         {
-            if (outputDevice == null)
+            // Add pause ability
+            if (outputDevice == null) 
             {
                 outputDevice = new WaveOutEvent();
                 outputDevice.PlaybackStopped += OnPlaybackStopped;
