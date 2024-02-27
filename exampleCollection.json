@@ -1,0 +1,45 @@
+{
+  "collection_name": "name",
+  "collection_data": [
+    {
+      "type": "NONLOOP",
+      "sounds": [
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        },
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        },
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        }
+      ]
+    },
+    {
+      "type": "LOOP",
+      "sounds": [
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        },
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        },
+        {
+          "path": "C:\\ ",
+          "cutoff_start": 0,
+          "cutoff_end": 0
+        }
+      ]
+    }
+  ]
+}
