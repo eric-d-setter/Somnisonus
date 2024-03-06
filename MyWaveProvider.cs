@@ -7,5 +7,7 @@ namespace Somnisonus
         void Proceed();
 
         bool IsLoopable();
+
+        void Reset();
     }
 }

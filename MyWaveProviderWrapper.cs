@@ -19,6 +19,8 @@ namespace Somnisonus
 
         public void Proceed() {}
 
+        public void Reset() { }
+
         public int Read(byte[] buffer, int offset, int count)
         {
             return waveProvider.Read(buffer, offset, count);

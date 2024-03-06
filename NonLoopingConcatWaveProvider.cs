@@ -2,7 +2,7 @@
 
 namespace Somnisonus
 {
-    class LoopingConcatWaveProvider : MyWaveProvider
+    class NonLoopingConcatWaveProvider : MyWaveProvider
     {
         private readonly AudioFileReader[] providers;
 
@@ -21,9 +21,8 @@ namespace Somnisonus
         //   providers:
         //     The source providers to play one after the other. Must all share the same sample
         //     rate and channel count
-        public LoopingConcatWaveProvider(IEnumerable<AudioFileReader> providers)
+        public NonLoopingConcatWaveProvider(IEnumerable<AudioFileReader> providers)
         {
-            this.EnableLooping = true;
             if (providers == null)
             {
                 throw new ArgumentNullException("providers");
@@ -44,21 +43,17 @@ namespace Somnisonus
             {
                 throw new ArgumentException("All inputs must have the same sample rate", "providers");
             }
-            
-        }
 
-        /// <summary>
-        /// Use this to turn looping on or off
-        /// </summary>
-        public bool EnableLooping { get; set; }
+        }
 
         public void Proceed()
         {
-            this.EnableLooping = false;
+            
         }
 
-        public bool IsLoopable() { 
-            return true;
+        public bool IsLoopable()
+        {
+            return false;
         }
 
         public void Reset()
@@ -81,10 +76,6 @@ namespace Somnisonus
                 if (num2 == 0)
                 {
                     currentProviderIndex++;
-                }
-                if (currentProviderIndex >= providers.Length && EnableLooping)
-                {
-                    Reset();
                 }
             }
 
