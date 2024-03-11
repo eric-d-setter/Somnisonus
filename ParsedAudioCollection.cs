@@ -8,12 +8,13 @@
     public class ParsedAudioSegment 
     {
         public String Type { get; set; }
+        public int Order { get; set; }
         public List<ParsedAudioSounds> Sounds { get; set; }
     }
     public class ParsedAudioSounds
     {
         public String Path { get; set; }
-        public int Cutoff_start { get; set; }
-        public int Cutoff_end { get; set; }
+        public int Cutoff_start { get; set; } = 0;
+        public int Cutoff_end { get; set; } = 0;
     }
 }

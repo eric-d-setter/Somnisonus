@@ -2,6 +2,7 @@
   "collection_name": "name",
   "collection_data": [
     {
+      "order" :  0,
       "type": "NONLOOP",
       "sounds": [
         {
@@ -22,6 +23,7 @@
       ]
     },
     {
+      "order" :  1,
       "type": "LOOP",
       "sounds": [
         {

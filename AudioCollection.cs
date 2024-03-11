@@ -26,6 +26,7 @@ namespace Somnisonus
     {
         private static String LOOP = "LOOP";
         private AudioSegmentType type { get; }
+        private int order { get; }
         private List<AudioSounds> sounds { get; }
         public AudioSegment(ParsedAudioSegment jsonInput) 
         {
@@ -35,6 +36,7 @@ namespace Somnisonus
             }
             type = jsonInput.Type.Equals(LOOP) ?  AudioSegmentType.LOOP : AudioSegmentType.NONLOOP;
             sounds = new List<AudioSounds>();
+            order = jsonInput.Order;
             foreach (var jsonSounds in jsonInput.Sounds)
             {
                 sounds.Add(new AudioSounds(jsonSounds));
