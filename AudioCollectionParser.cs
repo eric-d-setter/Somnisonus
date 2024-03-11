@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.Design.Serialization;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 
 namespace Somnisonus
@@ -83,6 +82,7 @@ namespace Somnisonus
         private ParsedAudioSounds CreateFile(ParsedAudioSounds sound, String directory)
         {
             ParsedAudioSounds result = new ParsedAudioSounds();
+            result.Order = sound.Order;
             if (Path.GetExtension(sound.Path).Equals(wavFileExtension))
             {
                 String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(sound.Path) + 

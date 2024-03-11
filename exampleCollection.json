@@ -6,16 +6,19 @@
       "type": "NONLOOP",
       "sounds": [
         {
+          "order": 0,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0
         },
         {
+          "order": 1,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0
         },
         {
+          "order": 2,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0
@@ -27,16 +30,19 @@
       "type": "LOOP",
       "sounds": [
         {
+          "order": 0,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0
         },
         {
+          "order": 1,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0
         },
         {
+          "order": 2,
           "path": "C:\\ ",
           "cutoff_start": 0,
           "cutoff_end": 0

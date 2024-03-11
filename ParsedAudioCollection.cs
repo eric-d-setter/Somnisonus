@@ -13,6 +13,7 @@
     }
     public class ParsedAudioSounds
     {
+        public int Order { get; set; }
         public String Path { get; set; }
         public int Cutoff_start { get; set; } = 0;
         public int Cutoff_end { get; set; } = 0;

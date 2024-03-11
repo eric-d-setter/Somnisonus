@@ -5,8 +5,8 @@ namespace Somnisonus
     
     internal class AudioCollection
     {
-        private String name { get; }
-        private List<AudioSegment> segments { get; }
+        public String name { get; }
+        public List<AudioSegment> segments { get; }
 
         public AudioCollection(ParsedAudioCollection jsonInput) 
         {
@@ -20,40 +20,43 @@ namespace Somnisonus
             {
                 segments.Add(new AudioSegment(jsonSegments));
             }
+            segments = segments.OrderBy(o => o.order).ToList();
         }
     }
     internal class AudioSegment 
     {
         private static String LOOP = "LOOP";
-        private AudioSegmentType type { get; }
-        private int order { get; }
-        private List<AudioSounds> sounds { get; }
+        public int order { get; }
+        public MyWaveProvider sounds { get; }
         public AudioSegment(ParsedAudioSegment jsonInput) 
         {
             if (jsonInput == null)
             {
                 throw new ArgumentNullException("Json Audio Segment is null");
             }
-            type = jsonInput.Type.Equals(LOOP) ?  AudioSegmentType.LOOP : AudioSegmentType.NONLOOP;
-            sounds = new List<AudioSounds>();
+            List<AudioSounds> audiosounds = new List<AudioSounds>();
+            List<AudioFileReader> sources = new List<AudioFileReader>();
             order = jsonInput.Order;
+
+            // Get data and sort
             foreach (var jsonSounds in jsonInput.Sounds)
             {
-                sounds.Add(new AudioSounds(jsonSounds));
+                audiosounds.Add(new AudioSounds(jsonSounds));
             }
-
+            audiosounds = audiosounds.OrderBy(o => o.order).ToList();
+            // Turn data into wave provider
+            foreach (var sound in audiosounds)
+            {
+                sources.Add(sound.audioFile);
+            }
+           
+            sounds = jsonInput.Type.Equals(LOOP) ? new LoopingConcatWaveProvider(sources) : new NonLoopingConcatWaveProvider(sources);
         }
-    }
-    internal enum AudioSegmentType
-    {
-        LOOP,
-        NONLOOP
     }
     internal class AudioSounds 
     {
-        public String Path { get; }
-        public int CutoffStart { get; }
-        public int CutoffEnd { get; }
+        public int order { get; }
+        public AudioFileReader audioFile { get; }
 
         public AudioSounds(ParsedAudioSounds jsonInput) 
         {
@@ -61,11 +64,7 @@ namespace Somnisonus
             {
                 throw new ArgumentNullException("Json Audio Sounds is null");
             }
-            AudioFileReader audioFile = new AudioFileReader(jsonInput.Path); 
-            // Use the WavFileUtil class to create new wave files at location
-            Path = jsonInput.Path;
-            CutoffStart = jsonInput.Cutoff_start;
-            CutoffEnd = jsonInput.Cutoff_end;
+            audioFile = new AudioFileReader(jsonInput.Path); 
         }
     }
 }
