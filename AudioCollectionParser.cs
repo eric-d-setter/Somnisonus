@@ -1,14 +1,19 @@
-﻿using System.IO;
+﻿using System.ComponentModel.Design.Serialization;
+using System.IO;
 using System.Text.Json;
 
 namespace Somnisonus
 {
     internal class AudioCollectionParser
     {
+        private static String collectionDirectory = "Collections";
+        private static String wavFileExtension = ".wav";
         private readonly string _sampleJsonFilePath;
+        private HashSet<String> fileSources;
         public AudioCollectionParser(string sampleJsonFilePath)
         {
             _sampleJsonFilePath = sampleJsonFilePath;
+            fileSources = new HashSet<String>();
         }
 
         private readonly JsonSerializerOptions _options = new()
@@ -26,9 +31,72 @@ namespace Somnisonus
             }
             else
             {
+                Console.WriteLine("Collection file is empty or formatted incorrectly.");
                 return null;
             }
            
+        }
+
+        public void PreprocessAudioFiles(ParsedAudioCollection collection)
+        {
+            try
+            {
+                String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
+                String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
+                foreach (ParsedAudioSegment segment in collection.Collection_data)
+                {
+                    foreach (ParsedAudioSounds sound in segment.Sounds)
+                    {
+                        CreateFile(sound, collectionLibrary);
+                    }
+                }
+            } catch (FileFormatException ex) 
+            {
+                Console.WriteLine(String.Format("File {0} is not a .wav file. All files must be .wav files for processing.", ex.Message));
+            }
+        }
+
+        private void CreateFile(ParsedAudioSounds sound, String directory)
+        {
+            if (Path.GetExtension(sound.Path).Equals(wavFileExtension))
+            {
+                String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(sound.Path) + 
+                    String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, wavFileExtension));
+                if (!File.Exists(newFileName))
+                {
+                    fileSources.Add(sound.Path);
+                    WavFileUtils.TrimWavFile(sound.Path, newFileName, new TimeSpan(0, 0, 0, 0,sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                }
+                else if (fileSources.Add(sound.Path)) 
+                {
+                    newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(sound.Path) +
+                    String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), wavFileExtension));
+                    WavFileUtils.TrimWavFile(sound.Path, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                }
+                else
+                {
+                    fileSources.Add(sound.Path);
+                    Console.WriteLine("File already exists, moving to next file.");
+                }
+            }
+            else
+            {
+                throw new FileFormatException(Path.GetFileName(sound.Path));
+            }
+
+
+        }
+
+        private String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
+        {   
+            String path = Path.Combine(appFolder, name);
+
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            return path;
         }
     }
 }
