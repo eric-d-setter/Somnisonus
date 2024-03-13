@@ -1,4 +1,6 @@
-﻿using NAudio.Wave;
+﻿using System.IO;
+using NAudio.Wave;
+using System.Text.RegularExpressions;
 
 namespace Somnisonus
 {
@@ -10,17 +12,24 @@ namespace Somnisonus
 
         public AudioCollection(ParsedAudioCollection jsonInput) 
         {
-            if (jsonInput == null)
+            try
             {
-                throw new ArgumentNullException("Json Audio Collection is null");
+                if (jsonInput == null)
+                {
+                    throw new ArgumentNullException("Json Audio Collection is null");
+                }
+                name = jsonInput.Collection_name;
+                segments = new List<AudioSegment>();
+                foreach (var jsonSegments in jsonInput.Collection_data)
+                {
+                    segments.Add(new AudioSegment(jsonSegments));
+                }
+                segments = segments.OrderBy(o => o.order).ToList();
             }
-            name = jsonInput.Collection_name;
-            segments = new List<AudioSegment>();
-            foreach (var jsonSegments in jsonInput.Collection_data)
+            catch (FileNotFoundException ex)
             {
-                segments.Add(new AudioSegment(jsonSegments));
+                Console.WriteLine("File in collection: " + name + "@ " + ex.Message + " was not found. Please attempt recreating the collection.");
             }
-            segments = segments.OrderBy(o => o.order).ToList();
         }
     }
     internal class AudioSegment 
@@ -64,7 +73,16 @@ namespace Somnisonus
             {
                 throw new ArgumentNullException("Json Audio Sounds is null");
             }
-            audioFile = new AudioFileReader(jsonInput.Path); 
+            String unescapedPath = Regex.Unescape(jsonInput.Path);
+            if (File.Exists(unescapedPath))
+            {
+                audioFile = new AudioFileReader(unescapedPath);
+            }
+            else
+            {
+                throw new FileNotFoundException(unescapedPath);
+            }
+             
         }
     }
 }

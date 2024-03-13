@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Somnisonus
 {
@@ -45,17 +46,18 @@ namespace Somnisonus
         }
 
         public void PreprocessAudioFiles(ParsedAudioCollection collection)
-        {
+        { 
             if (collection != null)
             {
-                ParsedAudioCollection machineReadJson = new ParsedAudioCollection();
-                List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
-                machineReadJson.Collection_name = collection.Collection_name;
-                String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
-                String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
                 try
                 {
+                    ParsedAudioCollection machineReadJson = new ParsedAudioCollection();
+                    List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
+                    machineReadJson.Collection_name = collection.Collection_name;
+                    String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
+                    String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
+
                     foreach (ParsedAudioSegment segment in collection.Collection_data)
                     {
                         ParsedAudioSegment newSegment = new ParsedAudioSegment();
@@ -69,49 +71,62 @@ namespace Somnisonus
                         newSegment.Sounds = newSounds;
                         newSegments.Add(newSegment);
                     }
+                    machineReadJson.Collection_data = newSegments;
+                    PrettyWrite(machineReadJson, Path.Combine(collectionDirectory, machineReadJson.Collection_name + jsonFileExtension));
                 }
                 catch (FileFormatException ex)
                 {
                     Console.WriteLine(String.Format("File {0} is not a .wav file. All files must be .wav files for processing.", ex.Message));
                 }
-                machineReadJson.Collection_data = newSegments;
-                PrettyWrite(machineReadJson, Path.Combine(collectionDirectory, machineReadJson.Collection_name + jsonFileExtension));
+                catch (FileNotFoundException ex)
+                {
+                    Console.WriteLine("Failed to find source audio file @:" + ex.Message);
+                }
             }
         }
 
         private ParsedAudioSounds CreateFile(ParsedAudioSounds sound, String directory)
         {
             ParsedAudioSounds result = new ParsedAudioSounds();
+            String unescapedPath = Regex.Unescape(sound.Path);
             result.Order = sound.Order;
-            if (Path.GetExtension(sound.Path).Equals(wavFileExtension))
+            if (Path.GetExtension(unescapedPath).Equals(wavFileExtension))
             {
-                String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(sound.Path) + 
+                String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(unescapedPath) + 
                     String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, wavFileExtension));
                 if (!File.Exists(newFileName))
                 {
-                    fileSources.Add(sound.Path);
-                    WavFileUtils.TrimWavFile(sound.Path, newFileName, new TimeSpan(0, 0, 0, 0,sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                    fileSources.Add(unescapedPath);
+                    WavFileUtils.TrimWavFile(unescapedPath, newFileName, new TimeSpan(0, 0, 0, 0,sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
                 }
-                else if (fileSources.Add(sound.Path)) 
+                else if (fileSources.Add(unescapedPath)) 
                 {
-                    newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(sound.Path) +
+                    newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(unescapedPath) +
                     String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), wavFileExtension));
-                    WavFileUtils.TrimWavFile(sound.Path, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                    WavFileUtils.TrimWavFile(unescapedPath, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
                 }
                 else
                 {
-                    fileSources.Add(sound.Path);
+                    fileSources.Add(unescapedPath);
                     Console.WriteLine("File already exists, moving to next file.");
                 }
-                result.Path = newFileName;
+                result.Path = Regex.Escape(newFileName);
                 return result;
             }
             else
             {
-                throw new FileFormatException(Path.GetFileName(sound.Path));
+                throw new FileFormatException(Path.GetFileName(unescapedPath));
             }
 
 
+        }
+
+        private void CheckIfSourceExistsOrThrowException(string filepath)
+        {
+            if (!File.Exists(filepath))
+            {
+                throw new FileNotFoundException(filepath);
+            }
         }
 
         private String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
