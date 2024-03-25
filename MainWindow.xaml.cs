@@ -125,5 +125,21 @@ namespace Somnisonus
         {
             mixer.StopLooping();
         }
+
+        private void processFiles_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            openFileDialog.Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*";
+            //openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+            if (openFileDialog.ShowDialog() == true)
+            {
+                foreach (String filename in openFileDialog.FileNames)
+                {
+                    AudioCollectionParser parser = new AudioCollectionParser(filename);
+                    parser.PreprocessAudioFiles(parser.UseFileOpenReadTextWithSystemTextJson());
+                }                
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@
         <Button x:Name="btnOpenFile_Copy" Click="btnOpenFiles_Click2" Margin="105,86,625,294" Content="Open file 2"/>
         <Button x:Name="btn_OpenFile_End" Content="Open File 3" HorizontalAlignment="Left" Margin="290,59,0,0" VerticalAlignment="Top" Height="45" Width="73" Click="btn_OpenFile_End_Click"/>
         <Button x:Name="StopLoop" Content="End Loop" HorizontalAlignment="Left" Margin="115,152,0,0" VerticalAlignment="Top" Click="StopLoop_Click"/>
+        <Button x:Name="processFiles" Content="Preprocess Files" HorizontalAlignment="Left" Margin="93,271,0,0" VerticalAlignment="Top" Height="44" Width="72" Click="processFiles_Click"/>
 
 
     </Grid>
