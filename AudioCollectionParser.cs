@@ -31,18 +31,26 @@ namespace Somnisonus
 
         public ParsedAudioCollection UseFileOpenReadTextWithSystemTextJson()
         {
-            using FileStream json = File.OpenRead(_sampleJsonFilePath);
-            List<ParsedAudioCollection> collection = JsonSerializer.Deserialize<List<ParsedAudioCollection>>(json, _options);
-            if (collection != null) 
+            //using FileStream json = File.OpenRead(_sampleJsonFilePath);
+            ParsedAudioCollection collection;
+            var json = File.ReadAllText(_sampleJsonFilePath);
+            try
             {
-                return collection.First(); //One collection per JSON file
+                collection = JsonSerializer.Deserialize<ParsedAudioCollection>(json, _options);
+                if (collection != null)
+                {
+                    return collection; //One collection per JSON file
+                }
+                else
+                {
+                    Console.WriteLine("Collection file is empty or formatted incorrectly.");
+                }
             }
-            else
+            catch (Exception e)
             {
-                Console.WriteLine("Collection file is empty or formatted incorrectly.");
-                return null;
+                Console.WriteLine("Cannot parse JSON file");
             }
-           
+            return null;
         }
 
         public void PreprocessAudioFiles(ParsedAudioCollection collection)
@@ -54,7 +62,8 @@ namespace Somnisonus
                     ParsedAudioCollection machineReadJson = new ParsedAudioCollection();
                     List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
                     machineReadJson.Collection_name = collection.Collection_name;
-                    String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    //String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                    String appFolder = Environment.CurrentDirectory;
                     String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
                     String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
 
@@ -88,7 +97,9 @@ namespace Somnisonus
         private ParsedAudioSounds CreateFile(ParsedAudioSounds sound, String directory)
         {
             ParsedAudioSounds result = new ParsedAudioSounds();
-            String unescapedPath = Regex.Unescape(sound.Path);
+            //String unescapedPath = Regex.Unescape(@sound.Path);
+            String unescapedPath = @sound.Path;
+
             result.Order = sound.Order;
             if (Path.GetExtension(unescapedPath).Equals(wavFileExtension))
             {
@@ -110,7 +121,7 @@ namespace Somnisonus
                     fileSources.Add(unescapedPath);
                     Console.WriteLine("File already exists, moving to next file.");
                 }
-                result.Path = Regex.Escape(newFileName);
+                result.Path = newFileName;
                 return result;
             }
             else
