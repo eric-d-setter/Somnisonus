@@ -1,0 +1,32 @@
+{
+  "roadmap_name": "name",
+  "collection_data": [
+    {
+      "collection_name": "col_name1",
+      "next": [
+        {
+          "next_name": "col_name2"
+        },
+        {
+          "next_name": "col_name3"
+        }
+      ]
+    },
+    {
+      "collection_name": "col_name2",
+      "next": [
+        {
+          "next_name": "col_name3"
+        },
+        {
+          "next_name": "col_name1"
+        }
+      ]
+    },
+    {
+      "collection_name": "col_name3",
+      "next": []
+    }
+  ],
+  "start": "col_name1"
+}

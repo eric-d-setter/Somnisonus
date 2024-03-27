@@ -22,6 +22,7 @@ namespace Somnisonus
     /// </summary>
     public partial class MainWindow : Window
     {
+        // OLD STUFF TO REMOVE
         private WaveOutEvent outputDevice;
         private AudioFileReader audioFile1;
         private AudioFileReader audioFile2;
@@ -32,7 +33,7 @@ namespace Somnisonus
         private string filename1;
         private string filename2;
         private string filename3;
-
+        // OLD STUFF END
 
         public MainWindow()
         {
