@@ -9,9 +9,11 @@ namespace Somnisonus
     {
         public String name { get; }
         public List<AudioSegment> segments { get; }
+        public List<AudioCollection> playNextOptions { get; }
 
         public AudioCollection(ParsedAudioCollection jsonInput) 
         {
+            playNextOptions = new List<AudioCollection>();
             try
             {
                 if (jsonInput == null)

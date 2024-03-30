@@ -29,6 +29,11 @@ namespace Somnisonus
             File.WriteAllText(fileName, jsonString);
         }
 
+        public AudioCollection Generate()
+        {
+            return new AudioCollection(UseFileOpenReadTextWithSystemTextJson());
+        }
+
         public ParsedAudioCollection UseFileOpenReadTextWithSystemTextJson()
         {
             //using FileStream json = File.OpenRead(_sampleJsonFilePath);
