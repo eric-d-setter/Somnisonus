@@ -106,11 +106,11 @@ namespace Somnisonus
                 
                 //LoopStream loop = new LoopStream(audioFile);
                 //outputDevice.Init(loop);
-                MyWaveProvider finalSound = new MyWaveProviderWrapper(audioFile3); 
+                //MyWaveProvider finalSound = new MyWaveProviderWrapper(audioFile3); 
                 loopingConcatSampleProvider = new LoopingConcatWaveProvider(new AudioFileReader[] { audioFile1, audioFile2 });
                 //concatenatingSampleProvider = new ConcatenatingSampleProvider(new ISampleProvider[] { loopingConcatSampleProvider.ToSampleProvider() });
 
-                mixer = new QueuingSampleProvider(new MyWaveProvider[] { loopingConcatSampleProvider, finalSound });
+                //mixer = new QueuingSampleProvider(new MyWaveProvider[] { loopingConcatSampleProvider, finalSound });
                 outputDevice.Init(mixer);
 
             }

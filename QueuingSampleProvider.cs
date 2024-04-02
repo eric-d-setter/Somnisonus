@@ -16,11 +16,9 @@ namespace Somnisonus
         private readonly Queue<MyWaveProvider> queue;
         private readonly AudioRoadMap roadMap;
         private AudioCollection AudioCollectionNowPlaying;
-        // TODO Need to add queue
         public MyWaveProvider NowPlaying { get; private set; }
         public String NextCollection { get; set; } = EMPTY_STRING;
         public List<String> NextOptions { get; private set; } = new List<string>();
-        // TODO Need to add the now playing
 
         //
         // Summary:
