@@ -6,14 +6,20 @@ namespace Somnisonus
 {
     class QueuingSampleProvider : ISampleProvider
     {
+        private static String EMPTY_STRING = "";
+
         private readonly List<ISampleProvider> sources; // Source needs to be kept at 1
 
         private float[] sourceBuffer;
 
         private const int MaxInputs = 1024;
         private readonly Queue<MyWaveProvider> queue;
+        private readonly AudioRoadMap roadMap;
+        private AudioCollection AudioCollectionNowPlaying;
         // TODO Need to add queue
-        public MyWaveProvider NowPlaying { get; private set; } 
+        public MyWaveProvider NowPlaying { get; private set; }
+        public String NextCollection { get; set; } = EMPTY_STRING;
+        public List<String> NextOptions { get; private set; } = new List<string>();
         // TODO Need to add the now playing
 
         //
@@ -78,6 +84,26 @@ namespace Somnisonus
             AddToQueue(queuable.ToList());
         }
 
+        public QueuingSampleProvider(AudioRoadMap roadmap)
+        {
+            this.roadMap = roadmap;
+            this.sources = new List<ISampleProvider>();
+            queue = new Queue<MyWaveProvider>();
+            AudioCollectionNowPlaying = roadMap.startingAudioCollection;
+            AddNewCollectionAndSetNext();
+        }
+
+        private void AddNewCollectionAndSetNext()
+        {
+            AddToQueue(AudioCollectionNowPlaying.WaveProvidersInCollection());
+            NextOptions = AudioCollectionNowPlaying.NextOptions();
+            if (NextOptions.Count == 0)
+            {
+                NextCollection = EMPTY_STRING;
+            }
+            //TODO: Inform UI of changes
+        }
+
         public void AddToQueue(IEnumerable<MyWaveProvider> queuable)
         {
             foreach (MyWaveProvider item in queuable)
@@ -107,7 +133,7 @@ namespace Somnisonus
                 NowPlaying = queue.Dequeue();
             }
             AddMixerInput(NowPlaying);
-
+            //TODO: Inform UI of changes
         }
         //
         // Summary:
@@ -223,6 +249,12 @@ namespace Somnisonus
                         if (queue.Count > 0)
                         {
                             PlayNext();
+                        }
+                        else if (queue.Count == 0 && !NextCollection.Equals(EMPTY_STRING))
+                        {
+                            AudioCollectionNowPlaying = roadMap.audioCollections[NextCollection];
+                            AudioCollectionNowPlaying.CollectionReset();
+                            AddNewCollectionAndSetNext();
                         }
                         // TODO after removing the source, add a new source on from the queue and update the now playing
                     }

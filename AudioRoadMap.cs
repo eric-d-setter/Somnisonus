@@ -16,7 +16,8 @@ namespace Somnisonus
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
 
-        Dictionary<String, AudioCollection> audioCollections { get; } = new Dictionary<String, AudioCollection>();
+        public Dictionary<String, AudioCollection> audioCollections { get; } = new Dictionary<String, AudioCollection>();
+        public AudioCollection startingAudioCollection { get; }
         public AudioRoadMap(string sampleJsonFilePath)
         {
             ParsedAudioRoadmap RoadMap;
@@ -35,20 +36,24 @@ namespace Somnisonus
                 {
                     Console.WriteLine("Collection file is empty or formatted incorrectly.");
                 }
-                foreach (ParsedAudioData collection in RoadMap.Collection_data) // Pass one to generate all data structures
+                else
                 {
-                    String path = Path.Combine(appFolder, collection.Collection_name);
-                    audioCollections[collection.Collection_name] = new AudioCollectionParser(Path.Combine(path, collection.Collection_name + jsonFileExtension)).Generate();
-                }
-                foreach (ParsedAudioData collection in RoadMap.Collection_data)
-                {
-                    if (collection.Next != null)
+                    foreach (ParsedAudioData collection in RoadMap.Collection_data) // Pass one to generate all data structures
                     {
-                        foreach (ParsedNextData nextOptions in collection.Next)
+                        String path = Path.Combine(appFolder, collection.Collection_name);
+                        audioCollections[collection.Collection_name] = new AudioCollectionParser(Path.Combine(path, collection.Collection_name + jsonFileExtension)).Generate();
+                    }
+                    foreach (ParsedAudioData collection in RoadMap.Collection_data)
+                    {
+                        if (collection.Next != null)
                         {
-                            audioCollections[collection.Collection_name].playNextOptions.Add(audioCollections[nextOptions.Next_name]);
+                            foreach (ParsedNextData nextOptions in collection.Next)
+                            {
+                                audioCollections[collection.Collection_name].playNextOptions.Add(audioCollections[nextOptions.Next_name]);
+                            }
                         }
                     }
+                    startingAudioCollection = audioCollections[RoadMap.Start];
                 }
 
             }

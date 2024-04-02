@@ -33,6 +33,35 @@ namespace Somnisonus
                 Console.WriteLine("File in collection: " + name + "@ " + ex.Message + " was not found. Please attempt recreating the collection.");
             }
         }
+
+        public List<MyWaveProvider> WaveProvidersInCollection()
+        {
+            List<MyWaveProvider> myWaveProviders = new List<MyWaveProvider>();  
+            foreach (AudioSegment audioSegments in segments)
+            {
+                myWaveProviders.Add(audioSegments.sounds);
+            }
+            return myWaveProviders;
+        }
+
+        public void CollectionReset()
+        {
+            List<MyWaveProvider> myWaveProviders = new List<MyWaveProvider>();
+            foreach (AudioSegment audioSegments in segments)
+            {
+                audioSegments.sounds.Reset();
+            }
+        }
+
+        public List<String> NextOptions()
+        {
+            List<String> result = new List<String>();
+            foreach (AudioCollection audioCollection in playNextOptions)
+            {
+                result.Add(audioCollection.name);
+            }
+            return result;
+        }
     }
     internal class AudioSegment 
     {
