@@ -99,7 +99,7 @@ namespace Somnisonus
             //TODO: Inform UI of changes
         }
 
-        public void AddToQueue(IEnumerable<MyWaveProvider> queuable)
+        private void AddToQueue(IEnumerable<MyWaveProvider> queuable)
         {
             foreach (MyWaveProvider item in queuable)
             {
@@ -107,7 +107,7 @@ namespace Somnisonus
             }
         }
 
-        public void AddToQueue(MyWaveProvider queuable)
+        private void AddToQueue(MyWaveProvider queuable)
         {
             queue.Enqueue(queuable);
             if (sources.Count == 0)
