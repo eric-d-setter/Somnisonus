@@ -12,12 +12,20 @@ namespace Somnisonus
     internal class AudioRoadMap
     {
         private static String collectionDirectory = "Collections";
+        private static String roadmapDirectory = "Roadmaps";
         private static String jsonFileExtension = ".json";
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
 
         public Dictionary<String, AudioCollection> audioCollections { get; } = new Dictionary<String, AudioCollection>();
         public AudioCollection startingAudioCollection { get; private set; }
+
+        public static void CopyFileToRoadmapDirectory(string sampleJsonFilePath)
+        {
+            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, roadmapDirectory);
+            File.Copy(sampleJsonFilePath, roadMapFolder + Path.GetFileName(sampleJsonFilePath), true);
+        }
+
         public AudioRoadMap(string sampleJsonFilePath)
         {
             ParsedAudioRoadmap RoadMap;
@@ -55,7 +63,6 @@ namespace Somnisonus
                     }
                     startingAudioCollection = audioCollections[RoadMap.Start];
                 }
-
             }
             catch (Exception e)
             {
@@ -69,7 +76,13 @@ namespace Somnisonus
             WriteIndented = true
         };
 
-        private void CheckIfSourceExistsOrThrowException(string filepath)
+        private static void PrettyWrite(object obj, string fileName)
+        {
+            var jsonString = JsonSerializer.Serialize(obj, _options);
+            File.WriteAllText(fileName, jsonString);
+        }
+
+        private static void CheckIfSourceExistsOrThrowException(string filepath)
         {
             if (!File.Exists(filepath))
             {
@@ -77,7 +90,7 @@ namespace Somnisonus
             }
         }
 
-        private String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
+        private static String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
         {
             String path = Path.Combine(appFolder, name);
 
