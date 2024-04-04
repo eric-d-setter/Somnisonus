@@ -17,7 +17,7 @@ namespace Somnisonus
         private HashSet<String> fileSources;
 
         public Dictionary<String, AudioCollection> audioCollections { get; } = new Dictionary<String, AudioCollection>();
-        public AudioCollection startingAudioCollection { get; }
+        public AudioCollection startingAudioCollection { get; private set; }
         public AudioRoadMap(string sampleJsonFilePath)
         {
             ParsedAudioRoadmap RoadMap;

@@ -95,10 +95,7 @@ namespace Somnisonus
         {
             AddToQueue(AudioCollectionNowPlaying.WaveProvidersInCollection());
             NextOptions = AudioCollectionNowPlaying.NextOptions();
-            if (NextOptions.Count == 0)
-            {
-                NextCollection = EMPTY_STRING;
-            }
+            NextCollection = EMPTY_STRING;         
             //TODO: Inform UI of changes
         }
 
