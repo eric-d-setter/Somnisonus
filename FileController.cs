@@ -3,12 +3,10 @@ using Microsoft.Win32;
 
 namespace Somnisonus
 {
-    internal class UIFileUtils
+    internal class FileController
     {
-        private static String collectionDirectory = "Collections";
-        private static String roadmapDirectory = "Roadmaps";
-        private static string CollectionsDirectory = Path.Combine(Environment.CurrentDirectory, collectionDirectory);
-        private static string RoadmapsDirectory = Path.Combine(Environment.CurrentDirectory, roadmapDirectory);
+        private bool roadMapSet = false;
+        private string filename = Constants.EMPTY_STRING;
 
         public static void ProcessCollectionConfig()
         {
@@ -43,13 +41,18 @@ namespace Somnisonus
 
         public static List<String> GetCollections()
         {
-            return Directory.GetFiles(CollectionsDirectory, "*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(Constants.CollectionsDirectory, "*.json", SearchOption.AllDirectories).ToList();
         }
         
         public static List<String> GetRoadmaps()
         {
-            return Directory.GetFiles(RoadmapsDirectory, "*.json").ToList();
+            return Directory.GetFiles(Constants.RoadmapsDirectory, "*.json").ToList();
         }
 
+        public void SetRoadmap(string filename)
+        {
+            this.filename = filename;
+            roadMapSet = true;
+        }
     }
 }

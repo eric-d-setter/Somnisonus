@@ -1,29 +1,16 @@
 ﻿using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using Microsoft.Win32;
-using NAudio.Mixer;
 
 namespace Somnisonus
 {
     internal class PlaybackController
     {
-        private static String collectionDirectory = "Collections";
-        private static String roadmapDirectory = "Roadmaps";
-        private static string CollectionsDirectory = Path.Combine(Environment.CurrentDirectory, collectionDirectory);
-        private static string RoadmapsDirectory = Path.Combine(Environment.CurrentDirectory, roadmapDirectory);
-
         private AudioRoadMap audioRoadmap;
         private QueuingSampleProvider queuer;
         private WaveOutEvent outputDevice;
 
         public PlaybackController(string filename) 
         {
-            audioRoadmap = new AudioRoadMap(RoadmapsDirectory + filename);
+            audioRoadmap = new AudioRoadMap(Constants.RoadmapsDirectory + filename);
             queuer = new QueuingSampleProvider(audioRoadmap);
         }
 

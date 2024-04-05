@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.IO;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace Somnisonus
 {
     internal class AudioRoadMap
     {
-        private static String collectionDirectory = "Collections";
-        private static String roadmapDirectory = "Roadmaps";
-        private static String jsonFileExtension = ".json";
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
 
@@ -22,7 +13,7 @@ namespace Somnisonus
 
         public static void CopyFileToRoadmapDirectory(string sampleJsonFilePath)
         {
-            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, roadmapDirectory);
+            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, Constants.roadmapDirectory);
             File.Copy(sampleJsonFilePath, roadMapFolder + Path.GetFileName(sampleJsonFilePath), true);
         }
 
@@ -34,7 +25,7 @@ namespace Somnisonus
             fileSources = new HashSet<String>();
             
             String appFolder = Environment.CurrentDirectory;
-            String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
+            String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.collectionDirectory);
             var json = File.ReadAllText(_sampleJsonFilePath);
 
             try
@@ -49,7 +40,7 @@ namespace Somnisonus
                     foreach (ParsedAudioData collection in RoadMap.Collection_data) // Pass one to generate all data structures
                     {
                         String path = Path.Combine(appFolder, collection.Collection_name);
-                        audioCollections[collection.Collection_name] = new AudioCollectionParser(Path.Combine(path, collection.Collection_name + jsonFileExtension)).Generate();
+                        audioCollections[collection.Collection_name] = new AudioCollectionParser(Path.Combine(path, collection.Collection_name + Constants.jsonFileExtension)).Generate();
                     }
                     foreach (ParsedAudioData collection in RoadMap.Collection_data)
                     {

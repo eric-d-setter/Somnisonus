@@ -1,14 +1,10 @@
 ﻿using System.IO;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 namespace Somnisonus
 {
     internal class AudioCollectionParser
     {
-        private static String collectionDirectory = "Collections";
-        private static String wavFileExtension = ".wav";
-        private static String jsonFileExtension = ".json";
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
         public AudioCollectionParser(string sampleJsonFilePath)
@@ -67,9 +63,8 @@ namespace Somnisonus
                     ParsedAudioCollection machineReadJson = new ParsedAudioCollection();
                     List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
                     machineReadJson.Collection_name = collection.Collection_name;
-                    //String appFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                     String appFolder = Environment.CurrentDirectory;
-                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, collectionDirectory);
+                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.collectionDirectory);
                     String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
 
                     foreach (ParsedAudioSegment segment in collection.Collection_data)
@@ -86,7 +81,7 @@ namespace Somnisonus
                         newSegments.Add(newSegment);
                     }
                     machineReadJson.Collection_data = newSegments;
-                    PrettyWrite(machineReadJson, Path.Combine(collectionDirectory, machineReadJson.Collection_name + jsonFileExtension));
+                    PrettyWrite(machineReadJson, Path.Combine(Constants.collectionDirectory, machineReadJson.Collection_name + Constants.jsonFileExtension));
                 }
                 catch (FileFormatException ex)
                 {
@@ -103,27 +98,27 @@ namespace Somnisonus
         {
             ParsedAudioSounds result = new ParsedAudioSounds();
             //String unescapedPath = Regex.Unescape(@sound.Path);
-            String unescapedPath = @sound.Path;
+            String path = @sound.Path;
 
             result.Order = sound.Order;
-            if (Path.GetExtension(unescapedPath).Equals(wavFileExtension))
+            if (Path.GetExtension(path).Equals(Constants.wavFileExtension))
             {
-                String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(unescapedPath) + 
-                    String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, wavFileExtension));
+                String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(path) + 
+                    String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, Constants.wavFileExtension));
                 if (!File.Exists(newFileName))
                 {
-                    fileSources.Add(unescapedPath);
-                    WavFileUtils.TrimWavFile(unescapedPath, newFileName, new TimeSpan(0, 0, 0, 0,sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                    fileSources.Add(path);
+                    WavFileUtils.TrimWavFile(path, newFileName, new TimeSpan(0, 0, 0, 0,sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
                 }
-                else if (fileSources.Add(unescapedPath)) 
+                else if (fileSources.Add(path)) 
                 {
-                    newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(unescapedPath) +
-                    String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), wavFileExtension));
-                    WavFileUtils.TrimWavFile(unescapedPath, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
+                    newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(path) +
+                    String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), Constants.wavFileExtension));
+                    WavFileUtils.TrimWavFile(path, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
                 }
                 else
                 {
-                    fileSources.Add(unescapedPath);
+                    fileSources.Add(path);
                     Console.WriteLine("File already exists, moving to next file.");
                 }
                 result.Path = newFileName;
@@ -131,7 +126,7 @@ namespace Somnisonus
             }
             else
             {
-                throw new FileFormatException(Path.GetFileName(unescapedPath));
+                throw new FileFormatException(Path.GetFileName(path));
             }
 
 

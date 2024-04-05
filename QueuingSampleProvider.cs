@@ -6,8 +6,6 @@ namespace Somnisonus
 {
     class QueuingSampleProvider : ISampleProvider
     {
-        private static String EMPTY_STRING = "";
-
         private readonly List<ISampleProvider> sources; // Source needs to be kept at 1
 
         private float[] sourceBuffer;
@@ -17,7 +15,7 @@ namespace Somnisonus
         private readonly AudioRoadMap roadMap;
         private AudioCollection AudioCollectionNowPlaying;
         public MyWaveProvider NowPlaying { get; private set; }
-        public String NextCollection { get; set; } = EMPTY_STRING;
+        public String NextCollection { get; set; } = Constants.EMPTY_STRING;
         public List<String> NextOptions { get; private set; } = new List<string>();
 
         //
@@ -95,7 +93,7 @@ namespace Somnisonus
         {
             AddToQueue(AudioCollectionNowPlaying.WaveProvidersInCollection());
             NextOptions = AudioCollectionNowPlaying.NextOptions();
-            NextCollection = EMPTY_STRING;         
+            NextCollection = Constants.EMPTY_STRING;         
             //TODO: Inform UI of changes
         }
 
@@ -245,7 +243,7 @@ namespace Somnisonus
                         {
                             PlayNext();
                         }
-                        else if (queue.Count == 0 && !NextCollection.Equals(EMPTY_STRING))
+                        else if (queue.Count == 0 && !NextCollection.Equals(Constants.EMPTY_STRING))
                         {
                             AudioCollectionNowPlaying = roadMap.audioCollections[NextCollection];
                             AudioCollectionNowPlaying.CollectionReset();

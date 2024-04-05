@@ -104,14 +104,14 @@ namespace Somnisonus
             {
                 throw new ArgumentNullException("Json Audio Sounds is null");
             }
-            String unescapedPath = Regex.Unescape(jsonInput.Path);
-            if (File.Exists(unescapedPath))
+            String path = Regex.Unescape(jsonInput.Path);
+            if (File.Exists(path))
             {
-                audioFile = new AudioFileReader(unescapedPath);
+                audioFile = new AudioFileReader(path);
             }
             else
             {
-                throw new FileNotFoundException(unescapedPath);
+                throw new FileNotFoundException(path);
             }
              
         }
