@@ -1,15 +1,43 @@
 ﻿using NAudio.Wave;
+using System.ComponentModel;
 
 namespace Somnisonus
 {
-    internal class PlaybackController
+    internal class PlaybackController : INotifyPropertyChanged
     {
         private AudioRoadMap audioRoadmap;
         private QueuingSampleProvider queuer;
         private WaveOutEvent outputDevice;
+        public MyWaveProvider NowPlaying { 
+            get 
+            {
+                return queuer.NowPlaying;
+            }
+            private set { }
+        }
+
+        public List<string> NextOptions { get; private set; }
+        public bool Loopable { get; private set; } = false;
+
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        void PlaybackController_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "NextOptions":
+                    NextOptions = queuer.NextOptions;
+                    break;
+                case "Loopable":
+                    Loopable = queuer.Loopable;
+                    break;
+            }
+        }
 
         public PlaybackController(string filename) 
         {
+            PropertyChanged += PlaybackController_PropertyChanged;
             audioRoadmap = new AudioRoadMap(Constants.RoadmapsDirectory + filename);
             queuer = new QueuingSampleProvider(audioRoadmap);
         }
@@ -46,11 +74,6 @@ namespace Somnisonus
         public void Stop() 
         {
             outputDevice?.Stop();
-        }
-
-        public List<string> NextOptions()
-        {
-            return queuer.NextOptions;
         }
 
         public void SetNext(string option)

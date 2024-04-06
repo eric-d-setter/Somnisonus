@@ -6,7 +6,7 @@ namespace Somnisonus
     internal class FileController
     {
         private bool roadMapSet = false;
-        private string filename = Constants.EMPTY_STRING;
+        private string filename = Constants.EmptyString;
 
         public static void ProcessCollectionConfig()
         {

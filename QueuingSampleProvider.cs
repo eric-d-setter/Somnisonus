@@ -1,10 +1,11 @@
 ﻿using NAudio.Utils;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
+using System.ComponentModel;
 
 namespace Somnisonus
 {
-    class QueuingSampleProvider : ISampleProvider
+    class QueuingSampleProvider : ISampleProvider, INotifyPropertyChanged
     {
         private readonly List<ISampleProvider> sources; // Source needs to be kept at 1
 
@@ -15,8 +16,46 @@ namespace Somnisonus
         private readonly AudioRoadMap roadMap;
         private AudioCollection AudioCollectionNowPlaying;
         public MyWaveProvider NowPlaying { get; private set; }
-        public String NextCollection { get; set; } = Constants.EMPTY_STRING;
-        public List<String> NextOptions { get; private set; } = new List<string>();
+        public String NextCollection { get; set; } = Constants.EmptyString;
+        private List<String> _nextOptions = new List<string>();
+        private bool _loopable;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void NotifyChange(PropertyChangedEventArgs e)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, e);
+        }
+
+        private static PropertyChangedEventArgs _nextArgs = new PropertyChangedEventArgs("NextOptions");
+        private static PropertyChangedEventArgs _loopArgs = new PropertyChangedEventArgs("Loopable");
+
+        public List<String> NextOptions
+        {
+            get { return _nextOptions; }
+            set
+            {
+                if (_nextOptions != value)
+                {
+                    _nextOptions = value;
+                    NotifyChange(_nextArgs);
+                }
+                _nextOptions = value;
+                
+            }
+        }
+
+        public bool Loopable { get { return _loopable; } 
+            set 
+            {
+                
+                if (_loopable != value)
+                {
+                    _loopable = value;
+                    NotifyChange(_loopArgs);
+                }
+            } 
+        }
 
         //
         // Summary:
@@ -93,8 +132,7 @@ namespace Somnisonus
         {
             AddToQueue(AudioCollectionNowPlaying.WaveProvidersInCollection());
             NextOptions = AudioCollectionNowPlaying.NextOptions();
-            NextCollection = Constants.EMPTY_STRING;         
-            //TODO: Inform UI of changes
+            NextCollection = Constants.EmptyString;
         }
 
         private void AddToQueue(IEnumerable<MyWaveProvider> queuable)
@@ -114,6 +152,7 @@ namespace Somnisonus
             }
         }
 
+
         public void StopLooping()
         {
             NowPlaying.Proceed();
@@ -126,7 +165,7 @@ namespace Somnisonus
                 NowPlaying = queue.Dequeue();
             }
             AddMixerInput(NowPlaying);
-            //TODO: Inform UI of changes
+            Loopable = NowPlaying.IsLoopable();
         }
         //
         // Summary:
@@ -243,7 +282,7 @@ namespace Somnisonus
                         {
                             PlayNext();
                         }
-                        else if (queue.Count == 0 && !NextCollection.Equals(Constants.EMPTY_STRING))
+                        else if (queue.Count == 0 && !NextCollection.Equals(Constants.EmptyString))
                         {
                             AudioCollectionNowPlaying = roadMap.audioCollections[NextCollection];
                             AudioCollectionNowPlaying.CollectionReset();

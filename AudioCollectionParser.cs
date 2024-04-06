@@ -97,7 +97,6 @@ namespace Somnisonus
         private ParsedAudioSounds CreateFile(ParsedAudioSounds sound, String directory)
         {
             ParsedAudioSounds result = new ParsedAudioSounds();
-            //String unescapedPath = Regex.Unescape(@sound.Path);
             String path = @sound.Path;
 
             result.Order = sound.Order;

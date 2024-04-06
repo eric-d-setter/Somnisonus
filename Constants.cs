@@ -4,7 +4,7 @@ namespace Somnisonus
 {
     public class Constants
     {
-        public static string EMPTY_STRING = string.Empty;
+        public static string EmptyString = string.Empty;
         public static String collectionDirectory = "Collections";
         public static String roadmapDirectory = "Roadmaps";
         public static String jsonFileExtension = ".json";
