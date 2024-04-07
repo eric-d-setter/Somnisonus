@@ -8,12 +8,12 @@ namespace Somnisonus
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
 
-        public Dictionary<String, AudioCollection> audioCollections { get; } = new Dictionary<String, AudioCollection>();
-        public AudioCollection startingAudioCollection { get; private set; }
+        public Dictionary<String, AudioStanza> audioCollections { get; } = new Dictionary<String, AudioStanza>();
+        public AudioStanza startingAudioCollection { get; private set; }
 
         public static void CopyFileToRoadmapDirectory(string sampleJsonFilePath)
         {
-            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, Constants.roadmapDirectory);
+            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, Constants.RoadmapDirectory);
             File.Copy(sampleJsonFilePath, roadMapFolder + Path.GetFileName(sampleJsonFilePath), true);
         }
 
@@ -25,7 +25,7 @@ namespace Somnisonus
             fileSources = new HashSet<String>();
             
             String appFolder = Environment.CurrentDirectory;
-            String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.collectionDirectory);
+            String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.StanzaDirectory);
             var json = File.ReadAllText(_sampleJsonFilePath);
 
             try
@@ -37,18 +37,18 @@ namespace Somnisonus
                 }
                 else
                 {
-                    foreach (ParsedAudioData collection in RoadMap.Collection_data) // Pass one to generate all data structures
+                    foreach (ParsedAudioData collection in RoadMap.Stanza_data) // Pass one to generate all data structures
                     {
-                        String path = Path.Combine(appFolder, collection.Collection_name);
-                        audioCollections[collection.Collection_name] = new AudioCollectionParser(Path.Combine(path, collection.Collection_name + Constants.jsonFileExtension)).Generate();
+                        String path = Path.Combine(appFolder, collection.Stanza_name);
+                        audioCollections[collection.Stanza_name] = new AudioStanzaParser(Path.Combine(path, collection.Stanza_name + Constants.JsonFileExtension)).Generate();
                     }
-                    foreach (ParsedAudioData collection in RoadMap.Collection_data)
+                    foreach (ParsedAudioData collection in RoadMap.Stanza_data)
                     {
                         if (collection.Next != null)
                         {
                             foreach (ParsedNextData nextOptions in collection.Next)
                             {
-                                audioCollections[collection.Collection_name].playNextOptions.Add(audioCollections[nextOptions.Next_name]);
+                                audioCollections[collection.Stanza_name].playNextOptions.Add(audioCollections[nextOptions.Next_name]);
                             }
                         }
                     }

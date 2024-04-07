@@ -3,11 +3,11 @@ using System.Text.Json;
 
 namespace Somnisonus
 {
-    internal class AudioCollectionParser
+    internal class AudioStanzaParser
     {
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
-        public AudioCollectionParser(string sampleJsonFilePath)
+        public AudioStanzaParser(string sampleJsonFilePath)
         {
             _sampleJsonFilePath = sampleJsonFilePath;
             fileSources = new HashSet<String>();
@@ -25,19 +25,18 @@ namespace Somnisonus
             File.WriteAllText(fileName, jsonString);
         }
 
-        public AudioCollection Generate()
+        public AudioStanza Generate()
         {
-            return new AudioCollection(UseFileOpenReadTextWithSystemTextJson());
+            return new AudioStanza(UseFileOpenReadTextWithSystemTextJson());
         }
 
-        public ParsedAudioCollection UseFileOpenReadTextWithSystemTextJson()
+        public ParsedAudioStanza UseFileOpenReadTextWithSystemTextJson()
         {
-            //using FileStream json = File.OpenRead(_sampleJsonFilePath);
-            ParsedAudioCollection collection;
+            ParsedAudioStanza collection;
             var json = File.ReadAllText(_sampleJsonFilePath);
             try
             {
-                collection = JsonSerializer.Deserialize<ParsedAudioCollection>(json, _options);
+                collection = JsonSerializer.Deserialize<ParsedAudioStanza>(json, _options);
                 if (collection != null)
                 {
                     return collection; //One collection per JSON file
@@ -54,20 +53,20 @@ namespace Somnisonus
             return null;
         }
 
-        public void PreprocessAudioFiles(ParsedAudioCollection collection)
+        public void PreprocessAudioFiles(ParsedAudioStanza collection)
         { 
             if (collection != null)
             {
                 try
                 {
-                    ParsedAudioCollection machineReadJson = new ParsedAudioCollection();
+                    ParsedAudioStanza machineReadJson = new ParsedAudioStanza();
                     List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
-                    machineReadJson.Collection_name = collection.Collection_name;
+                    machineReadJson.Stanza_name = collection.Stanza_name;
                     String appFolder = Environment.CurrentDirectory;
-                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.collectionDirectory);
-                    String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Collection_name);
+                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.StanzaDirectory);
+                    String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Stanza_name);
 
-                    foreach (ParsedAudioSegment segment in collection.Collection_data)
+                    foreach (ParsedAudioSegment segment in collection.Stanza_data)
                     {
                         ParsedAudioSegment newSegment = new ParsedAudioSegment();
                         newSegment.Order = segment.Order;
@@ -80,8 +79,8 @@ namespace Somnisonus
                         newSegment.Sounds = newSounds;
                         newSegments.Add(newSegment);
                     }
-                    machineReadJson.Collection_data = newSegments;
-                    PrettyWrite(machineReadJson, Path.Combine(Constants.collectionDirectory, machineReadJson.Collection_name + Constants.jsonFileExtension));
+                    machineReadJson.Stanza_data = newSegments;
+                    PrettyWrite(machineReadJson, Path.Combine(Constants.StanzaDirectory, machineReadJson.Stanza_name + Constants.JsonFileExtension));
                 }
                 catch (FileFormatException ex)
                 {
@@ -100,10 +99,10 @@ namespace Somnisonus
             String path = @sound.Path;
 
             result.Order = sound.Order;
-            if (Path.GetExtension(path).Equals(Constants.wavFileExtension))
+            if (Path.GetExtension(path).Equals(Constants.WavFileExtension))
             {
                 String newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(path) + 
-                    String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, Constants.wavFileExtension));
+                    String.Format("_{0}_{1}{2}", sound.Cutoff_start, sound.Cutoff_end, Constants.WavFileExtension));
                 if (!File.Exists(newFileName))
                 {
                     fileSources.Add(path);
@@ -112,7 +111,7 @@ namespace Somnisonus
                 else if (fileSources.Add(path)) 
                 {
                     newFileName = Path.Combine(directory, Path.GetFileNameWithoutExtension(path) +
-                    String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), Constants.wavFileExtension));
+                    String.Format("_{0}_{1}_{2}{3}", sound.Cutoff_start, sound.Cutoff_end, sound.Path.GetHashCode(), Constants.WavFileExtension));
                     WavFileUtils.TrimWavFile(path, newFileName, new TimeSpan(0, 0, 0, 0, sound.Cutoff_start), new TimeSpan(0, 0, 0, 0, sound.Cutoff_end));
                 }
                 else

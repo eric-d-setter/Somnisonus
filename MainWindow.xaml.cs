@@ -137,7 +137,7 @@ namespace Somnisonus
             {
                 foreach (String filename in openFileDialog.FileNames)
                 {
-                    AudioCollectionParser parser = new AudioCollectionParser(filename);
+                    AudioStanzaParser parser = new AudioStanzaParser(filename);
                     parser.PreprocessAudioFiles(parser.UseFileOpenReadTextWithSystemTextJson());
                 }                
             }

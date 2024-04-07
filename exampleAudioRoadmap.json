@@ -1,8 +1,8 @@
 {
   "roadmap_name": "name",
-  "collection_data": [
+  "stanza_data": [
     {
-      "collection_name": "col_name1",
+      "stanza_name": "col_name1",
       "next": [
         {
           "next_name": "col_name2"
@@ -13,7 +13,7 @@
       ]
     },
     {
-      "collection_name": "col_name2",
+      "stanza_name": "col_name2",
       "next": [
         {
           "next_name": "col_name3"
@@ -24,7 +24,7 @@
       ]
     },
     {
-      "collection_name": "col_name3",
+      "stanza_name": "col_name3",
       "next": []
     }
   ],

@@ -3,12 +3,12 @@
     public class ParsedAudioRoadmap
     {
         public String Roadmap_name { get; set; }
-        public List<ParsedAudioData> Collection_data { get; set; } = new List<ParsedAudioData>();
+        public List<ParsedAudioData> Stanza_data { get; set; } = new List<ParsedAudioData>();
         public String Start {  get; set; }
     }
     public class ParsedAudioData
     {
-        public String Collection_name { get; set; }
+        public String Stanza_name { get; set; }
         public List<ParsedNextData> Next { get; set; } = new List<ParsedNextData>();
     }
     public class ParsedNextData

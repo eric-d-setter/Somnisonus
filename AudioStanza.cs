@@ -5,24 +5,24 @@ using System.Text.RegularExpressions;
 namespace Somnisonus
 {
     
-    internal class AudioCollection
+    internal class AudioStanza
     {
         public String name { get; }
         public List<AudioSegment> segments { get; }
-        public List<AudioCollection> playNextOptions { get; }
+        public List<AudioStanza> playNextOptions { get; }
 
-        public AudioCollection(ParsedAudioCollection jsonInput) 
+        public AudioStanza(ParsedAudioStanza jsonInput) 
         {
-            playNextOptions = new List<AudioCollection>();
+            playNextOptions = new List<AudioStanza>();
             try
             {
                 if (jsonInput == null)
                 {
-                    throw new ArgumentNullException("Json Audio Collection is null");
+                    throw new ArgumentNullException("Json Audio Stanza is null");
                 }
-                name = jsonInput.Collection_name;
+                name = jsonInput.Stanza_name;
                 segments = new List<AudioSegment>();
-                foreach (var jsonSegments in jsonInput.Collection_data)
+                foreach (var jsonSegments in jsonInput.Stanza_data)
                 {
                     segments.Add(new AudioSegment(jsonSegments));
                 }
@@ -34,7 +34,7 @@ namespace Somnisonus
             }
         }
 
-        public List<MyWaveProvider> WaveProvidersInCollection()
+        public List<MyWaveProvider> WaveProvidersInStanza()
         {
             List<MyWaveProvider> myWaveProviders = new List<MyWaveProvider>();  
             foreach (AudioSegment audioSegments in segments)
@@ -44,7 +44,7 @@ namespace Somnisonus
             return myWaveProviders;
         }
 
-        public void CollectionReset()
+        public void StanzaReset()
         {
             List<MyWaveProvider> myWaveProviders = new List<MyWaveProvider>();
             foreach (AudioSegment audioSegments in segments)
@@ -56,7 +56,7 @@ namespace Somnisonus
         public List<String> NextOptions()
         {
             List<String> result = new List<String>();
-            foreach (AudioCollection audioCollection in playNextOptions)
+            foreach (AudioStanza audioCollection in playNextOptions)
             {
                 result.Add(audioCollection.name);
             }

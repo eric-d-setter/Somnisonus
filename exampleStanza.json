@@ -1,8 +1,8 @@
 {
-  "collection_name": "name",
-  "collection_data": [
+  "stanza_name": "name",
+  "stanza_data": [
     {
-      "order" :  0,
+      "order": 0,
       "type": "NONLOOP",
       "sounds": [
         {
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "order" :  1,
+      "order": 1,
       "type": "LOOP",
       "sounds": [
         {

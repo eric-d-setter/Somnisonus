@@ -1,9 +1,9 @@
 ﻿namespace Somnisonus
 {
-    public class ParsedAudioCollection
+    public class ParsedAudioStanza
     {
-        public String Collection_name { get; set; }
-        public List<ParsedAudioSegment> Collection_data { get; set; } = new List<ParsedAudioSegment>();
+        public String Stanza_name { get; set; }
+        public List<ParsedAudioSegment> Stanza_data { get; set; } = new List<ParsedAudioSegment>();
     }
     public class ParsedAudioSegment 
     {

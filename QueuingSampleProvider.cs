@@ -14,7 +14,7 @@ namespace Somnisonus
         private const int MaxInputs = 1024;
         private readonly Queue<MyWaveProvider> queue;
         private readonly AudioRoadMap roadMap;
-        private AudioCollection AudioCollectionNowPlaying;
+        private AudioStanza AudioCollectionNowPlaying;
         public MyWaveProvider NowPlaying { get; private set; }
         public String NextCollection { get; set; } = Constants.EmptyString;
         private List<String> _nextOptions = new List<string>();
@@ -130,7 +130,7 @@ namespace Somnisonus
 
         private void AddNewCollectionAndSetNext()
         {
-            AddToQueue(AudioCollectionNowPlaying.WaveProvidersInCollection());
+            AddToQueue(AudioCollectionNowPlaying.WaveProvidersInStanza());
             NextOptions = AudioCollectionNowPlaying.NextOptions();
             NextCollection = Constants.EmptyString;
         }
@@ -285,7 +285,7 @@ namespace Somnisonus
                         else if (queue.Count == 0 && !NextCollection.Equals(Constants.EmptyString))
                         {
                             AudioCollectionNowPlaying = roadMap.audioCollections[NextCollection];
-                            AudioCollectionNowPlaying.CollectionReset();
+                            AudioCollectionNowPlaying.StanzaReset();
                             AddNewCollectionAndSetNext();
                         }
                         // TODO after removing the source, add a new source on from the queue and update the now playing
