@@ -41,7 +41,7 @@ namespace Somnisonus
 
         public static List<String> GetCollections()
         {
-            return Directory.GetFiles(Constants.CollectionsDirectory, "*.json", SearchOption.AllDirectories).ToList();
+            return Directory.GetFiles(Constants.StanzasDirectory, "*.json", SearchOption.AllDirectories).ToList();
         }
         
         public static List<String> GetRoadmaps()

@@ -32,14 +32,14 @@ namespace Somnisonus
 
         public ParsedAudioStanza UseFileOpenReadTextWithSystemTextJson()
         {
-            ParsedAudioStanza collection;
+            ParsedAudioStanza stanza;
             var json = File.ReadAllText(_sampleJsonFilePath);
             try
             {
-                collection = JsonSerializer.Deserialize<ParsedAudioStanza>(json, _options);
-                if (collection != null)
+                stanza = JsonSerializer.Deserialize<ParsedAudioStanza>(json, _options);
+                if (stanza != null)
                 {
-                    return collection; //One collection per JSON file
+                    return stanza; //One collection per JSON file
                 }
                 else
                 {
@@ -53,20 +53,19 @@ namespace Somnisonus
             return null;
         }
 
-        public void PreprocessAudioFiles(ParsedAudioStanza collection)
+        public void PreprocessAudioFiles(ParsedAudioStanza stanza)
         { 
-            if (collection != null)
+            if (stanza != null)
             {
                 try
                 {
                     ParsedAudioStanza machineReadJson = new ParsedAudioStanza();
                     List<ParsedAudioSegment> newSegments = new List<ParsedAudioSegment>();
-                    machineReadJson.Stanza_name = collection.Stanza_name;
-                    String appFolder = Environment.CurrentDirectory;
-                    String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.StanzaDirectory);
-                    String collectionLibrary = CreateDirectoryLibraryIfNotExist(collectionFolder, collection.Stanza_name);
+                    machineReadJson.Stanza_name = stanza.Stanza_name;
+                    String stanzaFolder = CreateDirectoryLibraryIfNotExist(Constants.StanzasDirectory);
+                    String stanzaLibrary = CreateDirectoryLibraryIfNotExist(stanzaFolder, stanza.Stanza_name);
 
-                    foreach (ParsedAudioSegment segment in collection.Stanza_data)
+                    foreach (ParsedAudioSegment segment in stanza.Stanza_data)
                     {
                         ParsedAudioSegment newSegment = new ParsedAudioSegment();
                         newSegment.Order = segment.Order;
@@ -74,13 +73,13 @@ namespace Somnisonus
                         List<ParsedAudioSounds> newSounds = new List<ParsedAudioSounds>();
                         foreach (ParsedAudioSounds sound in segment.Sounds)
                         {
-                            newSounds.Add(CreateFile(sound, collectionLibrary));
+                            newSounds.Add(CreateFile(sound, stanzaLibrary));
                         }
                         newSegment.Sounds = newSounds;
                         newSegments.Add(newSegment);
                     }
                     machineReadJson.Stanza_data = newSegments;
-                    PrettyWrite(machineReadJson, Path.Combine(Constants.StanzaDirectory, machineReadJson.Stanza_name + Constants.JsonFileExtension));
+                    PrettyWrite(machineReadJson, Path.Combine(stanzaLibrary, machineReadJson.Stanza_name + Constants.JsonFileExtension));
                 }
                 catch (FileFormatException ex)
                 {
@@ -138,15 +137,19 @@ namespace Somnisonus
             }
         }
 
-        private String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
-        {   
-            String path = Path.Combine(appFolder, name);
-
+        private static String CreateDirectoryLibraryIfNotExist(string name)
+        {
+            String path = name;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
             return path;
+        }
+        private static String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
+        {   
+            String path = Path.Combine(appFolder, name);
+            return CreateDirectoryLibraryIfNotExist(path);
         }
     }
 }

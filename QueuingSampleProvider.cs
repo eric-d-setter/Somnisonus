@@ -124,7 +124,7 @@ namespace Somnisonus
             this.roadMap = roadmap;
             this.sources = new List<ISampleProvider>();
             queue = new Queue<MyWaveProvider>();
-            AudioCollectionNowPlaying = roadMap.startingAudioCollection;
+            AudioCollectionNowPlaying = roadMap.startingAudioStanza;
             AddNewCollectionAndSetNext();
         }
 
@@ -284,7 +284,7 @@ namespace Somnisonus
                         }
                         else if (queue.Count == 0 && !NextCollection.Equals(Constants.EmptyString))
                         {
-                            AudioCollectionNowPlaying = roadMap.audioCollections[NextCollection];
+                            AudioCollectionNowPlaying = roadMap.audioStanzas[NextCollection];
                             AudioCollectionNowPlaying.StanzaReset();
                             AddNewCollectionAndSetNext();
                         }

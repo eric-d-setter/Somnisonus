@@ -8,12 +8,12 @@ namespace Somnisonus
         private readonly string _sampleJsonFilePath;
         private HashSet<String> fileSources;
 
-        public Dictionary<String, AudioStanza> audioCollections { get; } = new Dictionary<String, AudioStanza>();
-        public AudioStanza startingAudioCollection { get; private set; }
+        public Dictionary<String, AudioStanza> audioStanzas { get; } = new Dictionary<String, AudioStanza>();
+        public AudioStanza startingAudioStanza { get; private set; }
 
         public static void CopyFileToRoadmapDirectory(string sampleJsonFilePath)
         {
-            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Environment.CurrentDirectory, Constants.RoadmapDirectory);
+            String roadMapFolder = CreateDirectoryLibraryIfNotExist(Constants.RoadmapsDirectory);
             File.Copy(sampleJsonFilePath, roadMapFolder + Path.GetFileName(sampleJsonFilePath), true);
         }
 
@@ -24,8 +24,7 @@ namespace Somnisonus
             _sampleJsonFilePath = sampleJsonFilePath;
             fileSources = new HashSet<String>();
             
-            String appFolder = Environment.CurrentDirectory;
-            String collectionFolder = CreateDirectoryLibraryIfNotExist(appFolder, Constants.StanzaDirectory);
+            String stanzaFolder = CreateDirectoryLibraryIfNotExist(Constants.StanzasDirectory);
             var json = File.ReadAllText(_sampleJsonFilePath);
 
             try
@@ -33,26 +32,26 @@ namespace Somnisonus
                 RoadMap = JsonSerializer.Deserialize<ParsedAudioRoadmap>(json, _options);
                 if (RoadMap == null)
                 {
-                    Console.WriteLine("Collection file is empty or formatted incorrectly.");
+                    Console.WriteLine("Stanza file is empty or formatted incorrectly.");
                 }
                 else
                 {
-                    foreach (ParsedAudioData collection in RoadMap.Stanza_data) // Pass one to generate all data structures
+                    foreach (ParsedAudioData stanza in RoadMap.Stanza_data) // Pass one to generate all data structures
                     {
-                        String path = Path.Combine(appFolder, collection.Stanza_name);
-                        audioCollections[collection.Stanza_name] = new AudioStanzaParser(Path.Combine(path, collection.Stanza_name + Constants.JsonFileExtension)).Generate();
+                        String stanzaLibrary = Path.Combine(stanzaFolder, stanza.Stanza_name);
+                        audioStanzas[stanza.Stanza_name] = new AudioStanzaParser(Path.Combine(stanzaLibrary, stanza.Stanza_name + Constants.JsonFileExtension)).Generate();
                     }
-                    foreach (ParsedAudioData collection in RoadMap.Stanza_data)
+                    foreach (ParsedAudioData stanza in RoadMap.Stanza_data)
                     {
-                        if (collection.Next != null)
+                        if (stanza.Next != null)
                         {
-                            foreach (ParsedNextData nextOptions in collection.Next)
+                            foreach (ParsedNextData nextOptions in stanza.Next)
                             {
-                                audioCollections[collection.Stanza_name].playNextOptions.Add(audioCollections[nextOptions.Next_name]);
+                                audioStanzas[stanza.Stanza_name].playNextOptions.Add(audioStanzas[nextOptions.Next_name]);
                             }
                         }
                     }
-                    startingAudioCollection = audioCollections[RoadMap.Start];
+                    startingAudioStanza = audioStanzas[RoadMap.Start];
                 }
             }
             catch (Exception e)
@@ -81,15 +80,19 @@ namespace Somnisonus
             }
         }
 
-        private static String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
+        private static String CreateDirectoryLibraryIfNotExist(string name)
         {
-            String path = Path.Combine(appFolder, name);
-
+            String path = name;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
             }
             return path;
+        }
+        private static String CreateDirectoryLibraryIfNotExist(String appFolder, String name)
+        {
+            String path = Path.Combine(appFolder, name);
+            return CreateDirectoryLibraryIfNotExist(path);
         }
     }
 }
